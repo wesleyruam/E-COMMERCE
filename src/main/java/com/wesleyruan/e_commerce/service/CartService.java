@@ -1,5 +1,6 @@
 package com.wesleyruan.e_commerce.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import com.wesleyruan.e_commerce.domain.model.CartItemModel;
 import com.wesleyruan.e_commerce.domain.model.CartModel;
 import com.wesleyruan.e_commerce.domain.model.ProductModel;
 import com.wesleyruan.e_commerce.domain.model.UserModel;
+import com.wesleyruan.e_commerce.dto.response.CartResponseDTO;
 import com.wesleyruan.e_commerce.dto.response.ServiceResponse;
 import com.wesleyruan.e_commerce.exception.BadRequestException;
 import com.wesleyruan.e_commerce.exception.NotFoundException;
@@ -81,6 +83,17 @@ public class CartService {
 
         return ServiceResponse.success("Product removed from cart");
     }
+
+    public ServiceResponse<CartResponseDTO> getCart(){
+        CartModel cart = getUserCart();
+        
+        List<CartItemModel> items = cartItemRepository.findByCartId(cart.getId());
+        CartResponseDTO response = new CartResponseDTO(items, (int) items.stream()
+            .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+            .sum());
+
+        return ServiceResponse.success(response);
+    }   
 
 
     public CartModel createCart(){

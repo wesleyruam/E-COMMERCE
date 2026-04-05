@@ -1,5 +1,6 @@
 package com.wesleyruan.e_commerce.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ public interface CartItemRepository extends JpaRepository<CartItemModel, Long> {
     Optional<CartItemModel> findByProductId(Long productId);
 
     Optional<CartItemModel> findByCartIdAndProductId(Long cartId, Long productId);
+
+    List<CartItemModel> findByCartId(Long cartId);
 }
