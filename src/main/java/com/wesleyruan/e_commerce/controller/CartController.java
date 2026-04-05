@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wesleyruan.e_commerce.dto.response.CartResponseDTO;
@@ -27,7 +28,7 @@ public class CartController {
     }
 
     @PostMapping()
-    public ResponseEntity<ServiceResponse<String>> addToCart(Long productId, Integer quantity){
+    public ResponseEntity<ServiceResponse<String>> addToCart(@RequestParam Long productId, @RequestParam Integer quantity){
         ServiceResponse<String> response = cartService.addToCart(productId, quantity);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
