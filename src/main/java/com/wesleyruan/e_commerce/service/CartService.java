@@ -70,6 +70,18 @@ public class CartService {
         return ServiceResponse.success("Product added to cart");
     }
 
+    public ServiceResponse<String> removeFromCart(Long productId){
+        CartModel cart = getUserCart();
+
+        CartItemModel item = cartItemRepository
+            .findByCartIdAndProductId(cart.getId(), productId)
+            .orElseThrow(() -> new NotFoundException("Product not found in cart"));
+
+        cartItemRepository.delete(item);
+
+        return ServiceResponse.success("Product removed from cart");
+    }
+
 
     public CartModel createCart(){
         UserModel user = userRepository.findById(securityUtils.getUserId())
