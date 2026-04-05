@@ -81,6 +81,11 @@ public class CartService {
 
         cartItemRepository.delete(item);
 
+        if (cartItemRepository.findByCartId(cart.getId()).isEmpty()) {
+            deleteCart(cart);
+        }
+
+
         return ServiceResponse.success("Product removed from cart");
     }
 
@@ -106,6 +111,11 @@ public class CartService {
         CartModel newCart = cartRepository.save(cart);
 
         return newCart;
+    }
+
+    public void deleteCart(CartModel cart){
+        cartItemRepository.deleteAll(cartItemRepository.findByCartId(cart.getId()));
+        cartRepository.delete(cart);
     }
 
     public CartModel getUserCart(){
