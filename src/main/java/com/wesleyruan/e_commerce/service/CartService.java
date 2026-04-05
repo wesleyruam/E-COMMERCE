@@ -88,7 +88,7 @@ public class CartService {
         CartModel cart = getUserCart();
         
         List<CartItemModel> items = cartItemRepository.findByCartId(cart.getId());
-        CartResponseDTO response = new CartResponseDTO(items, (int) items.stream()
+        CartResponseDTO response = new CartResponseDTO(items, items.stream()
             .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
             .sum());
 
@@ -116,25 +116,6 @@ public class CartService {
         }
         return cart.get();
 
-    }
-
-    public Boolean stockValidate(Long productId, Integer quantity, CartModel cart) {
-        ProductModel product = productRepository.findById(productId)
-            .orElseThrow(() -> new NotFoundException("Product not found"));
-
-        if (product.getStock() < quantity) {
-            return false;
-        }
-
-        CartItemModel existingItem = cartItemRepository
-            .findByCartIdAndProductId(cart.getId(), productId)
-            .orElse(null);
-
-        if (existingItem != null) {
-            return existingItem.getQuantity() + quantity <= product.getStock();
-        }
-
-        return true;
     }
 
 }
