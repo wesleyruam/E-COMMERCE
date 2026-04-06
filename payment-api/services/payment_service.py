@@ -33,7 +33,7 @@ def get_pending_payments(db: Session, user: User) -> list[PaymentResponseDTO]:
     return [_to_dto(p) for p in payments]
 
 
-
+def create_payment(db: Session, payment_request: PaymentRequestDTO, user: User) -> PaymentResponseDTO:
     existing = db.query(Payment).filter(Payment.order_id == payment_request.order_id).first()
     if existing:
         raise HTTPException(
