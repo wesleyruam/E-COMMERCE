@@ -26,6 +26,13 @@ def _get_and_validate(db: Session, payment_id: int, user: User) -> Payment:
 
 
 def create_payment(db: Session, payment_request: PaymentRequestDTO, user: User) -> PaymentResponseDTO:
+    existing = db.query(Payment).filter(Payment.order_id == payment_request.order_id).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"A payment for order {payment_request.order_id} already exists"
+        )
+
     payment = Payment(
         order_id=payment_request.order_id,
         amount=payment_request.amount,

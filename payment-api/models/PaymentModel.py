@@ -15,7 +15,7 @@ class Payment(Base):
     __tablename__ = 'payments'
 
     id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, nullable=False)
+    order_id = Column(Integer, nullable=False, unique=True)  # um pedido → um pagamento
     amount = Column(Float, nullable=False)
     status = Column(SQLEnum(PaymentStatusEnum), nullable=False, default=PaymentStatusEnum.PENDING)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
