@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, status
+from typing import List
 from sqlalchemy.orm import Session
 from config.db import get_db
 from auth import get_current_user
@@ -23,6 +24,19 @@ def create_payment(
     user: User = Depends(get_current_user)
 ):
     return payment_service.create_payment(db, payment_request, user)
+
+
+@router.get(
+    "/pending",
+    response_model=List[PaymentResponseDTO],
+    summary="Lista pagamentos pendentes",
+    description="Retorna todos os pagamentos com status PENDING do usuário autenticado"
+)
+def get_pending_payments(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
+    return payment_service.get_pending_payments(db, user)
 
 
 @router.get(

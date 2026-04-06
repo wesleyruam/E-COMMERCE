@@ -25,7 +25,15 @@ def _get_and_validate(db: Session, payment_id: int, user: User) -> Payment:
     return payment
 
 
-def create_payment(db: Session, payment_request: PaymentRequestDTO, user: User) -> PaymentResponseDTO:
+def get_pending_payments(db: Session, user: User) -> list[PaymentResponseDTO]:
+    payments = db.query(Payment).filter(
+        Payment.user_id == user.id,
+        Payment.status == PaymentStatusEnum.PENDING
+    ).all()
+    return [_to_dto(p) for p in payments]
+
+
+
     existing = db.query(Payment).filter(Payment.order_id == payment_request.order_id).first()
     if existing:
         raise HTTPException(
