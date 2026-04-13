@@ -1,0 +1,18 @@
+# Proteção extra para área administrativa
+Options -Indexes
+
+# Requer autenticação via token (controlado pelo PHP)
+# Em produção: restringir por IP se possível
+# Allow from 192.168.1.0/24
+# Deny from all
+
+# Cabeçalhos extras para área admin
+<IfModule mod_headers.c>
+    Header always set Cache-Control "no-store, no-cache, must-revalidate"
+    Header always set Pragma "no-cache"
+</IfModule>
+
+# Bloquear métodos além de GET e POST
+<LimitExcept GET POST>
+    Deny from all
+</LimitExcept>

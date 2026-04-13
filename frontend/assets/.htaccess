@@ -1,0 +1,7 @@
+# Permitir apenas arquivos estáticos — bloquear execução de PHP
+<FilesMatch "\.php$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+Options -Indexes

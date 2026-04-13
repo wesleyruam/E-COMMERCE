@@ -7,8 +7,13 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 
 import com.wesleyruan.e_commerce.dto.response.ServiceResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ServiceResponse<Void>> handleNotFound(NotFoundException ex) {
@@ -30,6 +35,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ServiceResponse<Void>> handleGeneric(Exception ex) {
+        log.error("Unhandled exception: {}", ex.getMessage(), ex);
         ServiceResponse<Void> response = ServiceResponse.internalServerError("Unexpected error");
         return new ResponseEntity<>(response, response.getStatusCode());
     }

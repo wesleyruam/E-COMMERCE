@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record LoginResponseDTO(
     String token,
-    Long expiresIn
-) {
-    
-}
+    Long expiresIn,
+    String refreshToken,
+    Long refreshExpiresIn
+) {}
+

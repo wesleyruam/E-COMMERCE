@@ -43,6 +43,10 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/user").permitAll()
+                .requestMatchers(HttpMethod.GET,  "/api/v1/products").permitAll()
+                .requestMatchers(HttpMethod.GET,  "/api/v1/products/**").permitAll()
                 .anyRequest().authenticated()
             )
             .csrf(csrf -> csrf.disable())

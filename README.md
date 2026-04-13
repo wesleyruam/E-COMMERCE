@@ -1,486 +1,135 @@
-# 🛒 ESPECIFICAÇÃO COMPLETA — E-COMMERCE API (VERSÃO EVOLUÍDA)
+# 🛒 E-Commerce Distribuído
 
----
-
-## 1. 📌 Descrição do sistema
-
-Sistema de e-commerce distribuído composto por três aplicações:
-
-* **API principal (Java / Spring Boot)**
-  Responsável por catálogo, carrinho, pedidos e autenticação.
-
-* **API de pagamento (Python)**
-  Simula um gateway de pagamento (estilo PIX), gerando links de pagamento e confirmando transações.
-
-* **Frontend (PHP)**
-  Interface web que consome a API Java e exibe o fluxo de compra ao usuário.
-
-### 🔗 Integração entre serviços
+Projeto de portfólio com três aplicações trabalhando em conjunto:
 
 ```text
-[ PHP Frontend ]
-        ↓
-[ Java API - E-commerce ]
-        ↓
-[ Python API - Payment Gateway ]
+[ Frontend PHP ] -> [ API Spring Boot ] -> [ Payment API FastAPI ]
 ```
 
----
+## Visão geral
 
-## 2. 🎯 Objetivo do projeto
+| Serviço | Stack | Porta padrão | Função |
+|---|---|---:|---|
+| API principal | Java 17 + Spring Boot | `8082` | autenticação, usuários, produtos, carrinho e pedidos |
+| Payment API | Python + FastAPI | `8000` | simulador de pagamentos |
+| Frontend | PHP puro | `8090` | interface web |
 
-Simular um fluxo real de e-commerce com integração externa de pagamento, demonstrando:
+## Subida rápida
 
-* Arquitetura modular e distribuída
-* Comunicação entre serviços (HTTP)
-* Modelagem de domínio realista
-* Regras de negócio complexas
-* Segurança com JWT
-* Separação de responsabilidades entre sistemas
+```bash
+./scripts/dev.sh start
+```
 
----
+Depois disso:
 
-## 3. ✅ Requisitos funcionais
+- **Frontend:** http://127.0.0.1:8090
+- **API Spring Boot:** http://127.0.0.1:8082
+- **H2 Console:** http://127.0.0.1:8082/h2-console
+- **Payment API Docs:** http://127.0.0.1:8000/docs
 
-### Usuário
+Para ver status:
 
-* Cadastro
-* Login
-* Visualizar perfil autenticado
+```bash
+./scripts/dev.sh status
+```
 
----
+Para parar tudo:
 
-### Produto
+```bash
+./scripts/dev.sh stop
+```
 
-* Criar produto (ADMIN)
-* Atualizar produto
-* Listar produtos
-* Buscar por ID
-* Filtrar por nome e faixa de preço
+## Credenciais padrão
 
----
+O projeto sobe um administrador seedado:
 
-### Carrinho
+- **E-mail:** `admin@e-commerce.com`
+- **Senha:** `admin123`
 
-* Adicionar item
-* Remover item
-* Atualizar quantidade
-* Visualizar carrinho
+## Fluxos validados
 
----
+Validados localmente pelo frontend:
 
-### Pedido
+- home, login, cadastro (renderização), produto e 404
+- login admin
+- área admin
+- criação de produto
+- adicionar ao carrinho
+- carrinho
+- checkout
+- listagem de pedidos
+- cancelamento de pedido
 
-* Criar pedido a partir do carrinho
-* Integrar com API de pagamento
-* Armazenar link de pagamento
-* Listar pedidos do usuário
-* Visualizar detalhes do pedido
-* Atualizar status após pagamento
+## Estado atual da integração de pagamento
 
----
+O checkout do frontend já cria o pedido com sucesso na API principal. A **Payment API existe, sobe junto pelo script e pode ser explorada via Swagger**, mas o fluxo visual completo de aprovação/rejeição de pagamento **ainda não está exposto no frontend PHP**.
 
-### Pagamento (API Python)
-
-* Criar pagamento
-* Gerar link de pagamento (simulação PIX)
-* Confirmar pagamento manualmente (simulação)
-
----
-
-## 4. ⚙️ Requisitos não funcionais
-
-* APIs RESTful padronizadas
-* Comunicação HTTP entre serviços
-* Autenticação via JWT (Java)
-* Banco relacional (PostgreSQL)
-* Código desacoplado e modular
-* Tratamento global de exceções
-* Paginação e filtros
-* Logging estruturado
-* Suporte a Docker (multi-container)
-* Separação clara entre serviços
-
----
-
-## 5. 📏 Regras de negócio
-
-### Produto
-
-* Estoque ≥ 0
-* Não permitir venda sem estoque suficiente
-
----
-
-### Carrinho
-
-* Um carrinho por usuário
-* Itens devem ter quantidade ≥ 1
-
----
-
-### Pedido
-
-* Pedido só pode ser criado se carrinho não estiver vazio
-* Total = soma dos itens
-* Preço do produto é congelado no momento da compra
-* Pedido inicia com status `CREATED`
-
----
-
-### Pagamento
-
-* Pedido deve ser enviado para API de pagamento
-* Após criação do pagamento:
-
-  * status → `WAITING_PAYMENT`
-  * salvar `paymentId` e `paymentUrl`
-* Pedido só muda para `PAID` após confirmação
-* Usuário só pode acessar seus próprios pedidos
-
----
-
-## 6. 🏗️ Arquitetura do sistema
-
-### Tipo
-
-* Monolito modular (Java) + serviços externos
-
----
-
-### Estilo
-
-Arquitetura em camadas:
+## Estrutura
 
 ```text
-Controller → Service → Domain → Repository
+e-commerce/
+├── frontend/              # Frontend PHP
+├── payment-api/           # Simulador de pagamentos em FastAPI
+├── src/                   # API principal em Spring Boot
+├── scripts/dev.sh         # Script único para start/stop/status/logs
+├── MANUAL_DE_USO.md       # Manual operacional do projeto
+├── pom.xml
+└── mvnw
 ```
 
----
+## Pré-requisitos
 
-### Separação por módulos (Java)
+- Java 17+
+- Python 3.10+
+- PHP 8.1+
+- `curl`
 
-* auth
-* user
-* product
-* cart
-* order
-* payment (integração externa)
+## Operação manual
 
----
+### API principal
 
-### Integração externa
+```bash
+./mvnw spring-boot:run
+```
 
-* API Python via HTTP (RestTemplate/WebClient)
+### Payment API
 
----
-
-## 7. 🧰 Tecnologias recomendadas
-
-### Java API
-
-* Java 17+
-* Spring Boot
-* Spring Web
-* Spring Data JPA
-* Spring Security
-* JWT
-* PostgreSQL
-* Flyway
-* Lombok
-
----
-
-### Python API
-
-* FastAPI ou Flask
-* UUID
-* Simulação de pagamento
-
----
+```bash
+cd payment-api
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --host 127.0.0.1 --port 8000
+```
 
 ### Frontend
 
-* PHP (simples, sem framework ou com Laravel opcional)
-
----
-
-### Infra
-
-* Docker
-* Docker Compose
-
----
-
-## 8. 🧱 Entidades do sistema
-
-### User
-
-* id (UUID)
-* name
-* email
-* password
-* createdAt
-
----
-
-### Product
-
-* id (UUID)
-* name
-* description
-* price
-* stock
-* createdAt
-
----
-
-### Cart
-
-* id (UUID)
-* userId
-
----
-
-### CartItem
-
-* id (UUID)
-* cartId
-* productId
-* quantity
-
----
-
-### Order (ATUALIZADA)
-
-* id (UUID)
-* userId
-* total
-* status
-  (`CREATED`, `WAITING_PAYMENT`, `PAID`, `CANCELLED`)
-* paymentId
-* paymentUrl
-* createdAt
-
----
-
-### OrderItem
-
-* id (UUID)
-* orderId
-* productId
-* quantity
-* price (snapshot)
-
----
-
-## 9. 🔗 Relacionamentos
-
-* User 1:N Order
-* User 1:1 Cart
-* Cart 1:N CartItem
-* Order 1:N OrderItem
-* Product 1:N CartItem
-* Product 1:N OrderItem
-
----
-
-## 10. 🌐 Endpoints da API
-
-### Auth
-
-* POST /auth/register
-* POST /auth/login
-
----
-
-### User
-
-* GET /users/me
-
----
-
-### Product
-
-* POST /products
-* PUT /products/{id}
-* GET /products
-* GET /products/{id}
-
----
-
-### Cart
-
-* POST /cart/items
-* PUT /cart/items/{itemId}
-* DELETE /cart/items/{itemId}
-* GET /cart
-
----
-
-### Order
-
-* POST /orders → cria pedido + chama pagamento
-* GET /orders
-* GET /orders/{id}
-
----
-
-### Integração interna (Java → Python)
-
-#### Criar pagamento
-
-```http
-POST /payments
+```bash
+cd frontend
+php -S 127.0.0.1:8090 router.php
 ```
 
-#### Confirmar pagamento (simulação)
-
-```http
-POST /payments/{id}/confirm
-```
-
----
-
-## 11. 📥 Request DTO
-
-### Criar pedido
-
-```json
-{
-  "cartId": "uuid"
-}
-```
-
----
-
-### Request para API Python
-
-```json
-{
-  "orderId": "uuid",
-  "amount": 100.0
-}
-```
-
----
-
-## 12. 📤 Response DTO
-
-### Pedido (ATUALIZADO)
-
-```json
-{
-  "id": "uuid",
-  "total": 10000.00,
-  "status": "WAITING_PAYMENT",
-  "paymentUrl": "http://fake-pix.com/pay/uuid",
-  "items": [
-    {
-      "productId": "uuid",
-      "quantity": 2,
-      "price": 5000.00
-    }
-  ]
-}
-```
-
----
-
-## 13. 📁 Estrutura de pastas (Java)
+Se quiser sobrescrever as URLs consumidas pelo frontend:
 
 ```bash
-config/
-security/
-
-controller/
-service/
-repository/
-
-domain/
-  model/
-  enums/
-
-dto/
-  request/
-  response/
-
-integration/
-  payment/
-
-exception/
+export ECOMMERCE_API_BASE_URL="http://127.0.0.1:8082/api/v1"
+export ECOMMERCE_PAYMENT_API_URL="http://127.0.0.1:8000"
 ```
 
----
+## Logs
 
-## 14. 📦 Padrão de resposta da API
+Quando iniciado por `./scripts/dev.sh start`, os logs ficam em:
 
-### Sucesso
-
-```json
-{
-  "success": true,
-  "data": {},
-  "timestamp": "2026-03-29T12:00:00Z"
-}
+```text
+.dev-runtime/
 ```
 
----
+Comando rápido:
 
-### Erro
-
-```json
-{
-  "success": false,
-  "errors": [
-    {
-      "message": "Produto sem estoque",
-      "code": "OUT_OF_STOCK"
-    }
-  ]
-}
+```bash
+./scripts/dev.sh logs
 ```
 
----
+## Documentação complementar
 
-## 15. 🔐 Autenticação e autorização
-
-### Java API
-
-* JWT (Bearer Token)
-* BCrypt para senha
-
-### Perfis
-
-* USER → compra, carrinho
-* ADMIN → gerenciar produtos
-
----
-
-### Python API
-
-* Pode ser:
-
-  * Aberta (simples)
-  * Protegida com API Key (melhor prática)
-
----
-
-## 16. 🚀 Possíveis melhorias futuras
-
-* Webhook de pagamento (Python → Java)
-* Cache com Redis
-* Mensageria (Kafka/RabbitMQ)
-* Microservices reais
-* Sistema de cupons
-* Upload de imagens
-* Avaliações
-* Rate limiting
-* Observabilidade (logs + métricas)
-
----
-
-## 17. 📊 Nível do projeto
-
-👉 **Intermediário → Profissional (com arquitetura distribuída)**
-
+O guia operacional completo está em [MANUAL_DE_USO.md](./MANUAL_DE_USO.md).

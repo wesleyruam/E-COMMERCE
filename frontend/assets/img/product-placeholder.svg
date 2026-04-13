@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-labelledby="title desc">
+  <title id="title">Imagem do produto indisponivel</title>
+  <desc id="desc">Placeholder usado quando o produto nao possui imagem cadastrada.</desc>
+  <rect width="600" height="400" fill="#e5e7eb"/>
+  <rect x="120" y="90" width="360" height="220" rx="16" fill="#cbd5e1"/>
+  <circle cx="210" cy="170" r="34" fill="#94a3b8"/>
+  <path d="M180 270l70-72 55 52 48-38 67 58H180z" fill="#64748b"/>
+  <text x="300" y="350" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#475569">
+    Sem imagem
+  </text>
+</svg>
